@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('Build Maven') {
+            steps {
+                checkout scm
+                bat 'mvn clean install'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    bat 'wsl docker build -t vishakha100/docker-jenkins-integration-sample .'
+                }
+            }
+        }
+        stage('Run Container') {
+            steps {
+                script {
+                    bat 'wsl docker run -d -p 8080:8080 --name my-container vishakha100/docker-jenkins-integration-sample'
+                }
+            }
+        }
+    }
+}
